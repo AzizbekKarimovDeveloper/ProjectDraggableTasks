@@ -1,44 +1,59 @@
 <template>
+    <div class="container-fluid my-4 ">
+        <el-dialog title="Add Task"
+                   :visible.sync="openModal" width="30%"
+                   center>
+            <b-container fluid>
+                <b-row class="my-1 pb-3 mt-0">
+                    <b-col sm="4">
+                        <label class="pb-0 style-label">Title:</label>
+                    </b-col>
+                    <b-col sm="8" class="pb-0">
+                        <b-form-input type="text" placeholder="Type Title" v-model="card.title"></b-form-input>
+                    </b-col>
+                    <b-col sm="4">
+                        <label class="style-label">Description:</label>
+                    </b-col>
+                    <b-col sm="8">
+                        <b-form-input type="text" placeholder="Type Description"
+                                      v-model="card.description"></b-form-input>
+                    </b-col>
+                </b-row>
+            </b-container>
 
-    <div class="container-fluid my-4">
-        <el-dialog
-                title="Add Task"
-                :visible.sync="openModal"
-                width="30%"
-                center>
-            <el-form ref="form" label-width="100px">
-                <el-form-item label="Title">
-                    <el-input v-model="payload.name"></el-input>
-                </el-form-item>
-                <el-form-item label="Description">
-                    <el-input v-model="payload.title"></el-input>
-                </el-form-item>
-            </el-form>
+            <!--                <section>-->
+            <!--                    <p>footer slot</p>-->
+            <!--                    <date-picker v-model="value3" range placeholder="Select date range">-->
+            <!--                        <template v-slot:footer="{ emit }">-->
+            <!--                            <div style="text-align: left">-->
+            <!--                                <button class="mx-btn mx-btn-text" @click="selectNextThreeDay(emit)">-->
+            <!--                                    NextThreeDay-->
+            <!--                                </button>-->
+            <!--                            </div>-->
+            <!--                        </template>-->
+            <!--                    </date-picker>-->
+            <!--                </section>-->
+
+            <div class="col-header">
             <span slot="footer" class="dialog-footer">
-    <el-button @click="closeModal">Cancel</el-button>
-    <el-button type="primary" @click="saveTask">Confirm</el-button>
-  </span>
+                 <b-button pill variant="outline-danger" class="mr-2" @click="closeModal">Cancel</b-button>
+                 <b-button type="primary" pill variant="primary" @click="saveTask">Create</b-button>
+
+            </span>
+            </div>
         </el-dialog>
+
         <div class="row">
-
-
             <div class="col-md-3">
                 <div class="card border-dark">
                     <div class="card-body">
-                        <span class="font-weight-bold ">To do</span>
+                        <span class="col-header">To do</span>
                         <hr class="mt-1 bg-info">
-
-                        <draggable class="list-group" tag="ul" v-model="list" v-bind="dragOptions" :move="onMove"
-                                   @start="isDragging=true" @end="isDragging=false">
-                            <transition-group name="no" class="list-group" tag="ul">
-                                <el-card class="el-card card-wrapper is-always-shadow" v-for="(element,index) in list"
-                                         :key="index"
-                                >
-                                    <div class="title"> {{element.name}}
-                                    </div>
-                                    <div class="description">{{element.title}}</div>
-                                </el-card>
-                            </transition-group>
+                        <draggable tag="ul" v-model="ColOne" v-bind="draggableSettings">
+                            <b-card class="card-distance" v-for="(task,index) in ColOne" :key="index">
+                                <div class="style-title"> {{task.title}}</div>
+                                <div class="style-description">{{task.description}}</div>
+                            </b-card>
                         </draggable>
                     </div>
                 </div>
@@ -47,18 +62,13 @@
             <div class="col-md-3">
                 <div class="card border-dark">
                     <div class="card-body">
-                        <span class="font-weight-bold ">In Progress</span>
+                        <span class="col-header ">In Progress</span>
                         <hr class="mt-1 bg-info">
-                        <draggable element="span" v-model="list2" v-bind="dragOptions" :move="onMove">
-                            <transition-group name="no" class="list-group" tag="ul">
-                                <el-card class="el-card card-wrapper is-always-shadow" v-for="(element,index) in list2"
-                                         :key="index"
-                                >
-                                    <div class="title"> {{element.name}}
-                                    </div>
-                                    <div class="description">{{element.title}}</div>
-                                </el-card>
-                            </transition-group>
+                        <draggable v-model="colTwo" v-bind="draggableSettings">
+                            <b-card class="card-distance" v-for="(task,index) in colTwo" :key="index">
+                                <div class="style-title"> {{task.title}}</div>
+                                <div class="style-description">{{task.description}}</div>
+                            </b-card>
                         </draggable>
                     </div>
                 </div>
@@ -67,18 +77,15 @@
             <div class="col-md-3">
                 <div class="card border-dark">
                     <div class="card-body">
-                        <span class="font-weight-bold ">Done</span>
+                        <span class="col-header ">Done</span>
                         <hr class="mt-1 bg-info">
-                        <draggable element="span" v-model="list3" v-bind="dragOptions" :move="onMove">
-                            <transition-group name="no" class="list-group" tag="ul">
-                                <el-card class="el-card card-wrapper is-always-shadow" v-for="(element,index) in list3"
-                                         :key="index"
-                                >
-                                    <div style="cursor: pointer" class="title"><span>{{element.name}}</span>
-                                    </div>
-                                    <div class="description">{{element.title}}</div>
-                                </el-card>
-                            </transition-group>
+                        <draggable v-model="colThree" v-bind="draggableSettings">
+                            <b-card class="card-distance" v-for="(task,index) in colThree" :key="index">
+                                <div class="style-title">
+                                    <span>{{task.title}}</span>
+                                </div>
+                                <div class="style-description">{{task.description}}</div>
+                            </b-card>
                         </draggable>
                     </div>
                 </div>
@@ -87,24 +94,28 @@
             <div class="col-md-3">
                 <div class="card border-dark">
                     <div class="card-body">
-                        <span class="font-weight-bold ">List Task</span>
-
-
-                        <button data-v-b5e7257a="" type="button" style="float: right; padding: 3px 0;"
-                                class="el-button btn-add el-button--text"><!----><!----><span
-                                @click="addItem">+ Add</span>
-                        </button>
+                        <span class="col-header ">List Task</span>
+                        <span @click="addTask" class="style-addButton">+ Add</span>
                         <hr class="mt-1 bg-info">
-                        <draggable element="span" v-model="items" v-bind="dragOptions" :move="onMove">
-                            <transition-group name="no" class="list-group" tag="ul">
-                                <el-card class="el-card card-wrapper is-always-shadow"
-                                         v-for="(element,index) in items" :key="index"
+                        <draggable v-model="tasks" v-bind="draggableSettings">
+                            <template>
+                                <b-card class="card-distance"
+                                        v-for="(task,index) in tasks" :key="index"
                                 >
-                                    <div class="title"> {{element.name}}
+                                    <div class="style-title"> {{task.title}}
                                     </div>
-                                    <div class="description">{{element.title}}</div>
-                                </el-card>
-                            </transition-group>
+                                    <div class="style-description">{{task.description}}</div>
+                                </b-card>
+                            </template>
+<!--                            <template v-if="bool = false">-->
+<!--                                <b-card class="card-distance"-->
+<!--                                        v-for="(task,index) in arrays" :key="index"-->
+<!--                                >-->
+<!--                                    <div class="style-title"> {{task.title}}-->
+<!--                                    </div>-->
+<!--                                    <div class="style-description">{{task.description}}</div>-->
+<!--                                </b-card>-->
+<!--                            </template>-->
                         </draggable>
                     </div>
                 </div>
@@ -119,124 +130,145 @@
 
     import draggable from "vuedraggable";
 
-    const message = [
-        {name: 'Task D', title: 'Update style'}
-    ];
-    const message1 = [
-        {name: 'Task F', title: 'Remove button Y'}
+    let id = 1;
+    const col1Task = [], col2Task = [], col3Task = [];
 
-    ];
-    const message3 = [
-        {name: 'Task F', title: 'Fix Bug #001'}
-
-    ];
     export default {
-        name: 'HelloWorld',
+        name: 'Tasks',
+        display: "Simple",
         components: {
             draggable,
         },
         data() {
             return {
-                items: [
-                    {name: 'Task A', title: 'Refactor using Kotlin', order: 1},
-                    {name: 'Task B', title: 'Update using Typescript', order: 2},
-                    {name: 'Task C', title: 'There is a bug when user click button X', order: 3}
-
+                arrays: [],
+                types: [
+                    'Title',
+                    'Description',
                 ],
-                list: message.map((list, index) => {
-                    return {name: list.name, title: list.title, order: index + 1, fixed: false};
+                card: {
+                    title: '',
+                    description: '',
+                },
+                tasks: [
+                    {title: 'Task 1', description: 'This is Default Task'},
+                ],
+                ColOne: col1Task.map((task) => {
+                    return {title: task.title, description: task.description};
                 }),
-                list2: message1.map((list, index) => {
-                    return {name: list.name, title: list.title, order: index + 1, fixed: false};
+                colTwo: col2Task.map((task) => {
+                    return {title: task.title, description: task.description};
                 }),
-                list3: message3.map((list, index) => {
-                    return {name: list.name, title: list.title, order: index + 1, fixed: false};
+                colThree: col3Task.map((task) => {
+                    return {title: task.title, description: task.description};
                 }),
-
-                editable: true,
-                isDragging: false,
-                delayedDragging: false,
+                bool: true,
+                editTask: true,
                 openModal: false,
-                payload: {
-                    name: '',
-                    title: ''
-                }
+
             }
         },
         methods: {
-            async saveTask() {
-                await this.items.push(this.payload);
+            saveTask() {
+                // this.tasks.push({title: this.card.title, description: this.card.description, id: id++});
 
+
+                this.tasks.push({title: this.card.title, description: this.card.description, id: id++});
+                let myArrayTasks = JSON.stringify(this.tasks)
+                localStorage.setItem("MyTasks", myArrayTasks);
                 this.openModal = false;
-
-
             },
-
-            onMove({relatedContext, draggedContext}) {
-                const relatedElement = relatedContext.element;
-                const draggedElement = draggedContext.element;
-                return (
-                    (!relatedElement || !relatedElement.fixed) && !draggedElement.fixed
-                );
-            },
-            addItem() {
-                this.payload.name = ''
-                this.payload.title = ''
+            addTask() {
+                this.card.description = ''
+                this.card.title = ''
                 this.openModal = true;
             },
             closeModal() {
                 this.openModal = false;
             }
         },
+        // created() {
+        //     let currentArray = JSON.parse(localStorage.getItem("MyTasks"));
+        //     if (currentArray != null) {
+        //         this.tasks = JSON.parse(localStorage.getItem("MyTasks"));
+        //         this.bool = false;
+        //     }
+        //
+        // },
         computed: {
 
-            dragOptions() {
+            draggableSettings() {
                 return {
                     animation: 0,
                     group: "description",
-                    disabled: !this.editable,
+                    disabled: !this.editTask,
                     ghostClass: "ghost"
                 };
             },
         },
-        watch: {
-            isDragging(newValue) {
-                if (newValue) {
-                    this.delayedDragging = true;
-                    return;
-                }
-                this.$nextTick(() => {
-                    this.delayedDragging = false;
-                });
-            },
-
-        }
     }
 </script>
 
 <style scoped>
+    .card-draggable :hover {
+
+    }
+
+    .card-body {
+        cursor: grab;
+    }
+
     .card {
         border-radius: 20px;
         box-shadow: 1px 5px 5px -1px lightgray;
     }
 
-    .description {
+    .col-header {
+        margin-top: -20px;
+        padding-top: 5px;
+    }
+
+    .dialog-footer {
+        font-size: 5px;
+        margin-right: 50px;
+        padding-left: 135px
+    }
+
+
+    .style-description {
         color: grey;
         font-size: .75em;
         padding: 10px;
         display: flex;
     }
-    .title {
+
+    .style-addButton {
+        font-size: 14px;
+        cursor: pointer;
+        color: #60a8ff;
+        float: right;
+        margin: -1px;
+        padding: 5px;
+    }
+
+    .style-title {
         border-bottom: 0.5px solid #d8d8d8;
         color: #0ecc9b;
         font-weight: 700;
         padding: 10px;
         display: flex;
     }
-    .card-wrapper {
+
+    .style-label {
+        color: #030623;
+        font-weight: 700;
+    }
+
+    .card-distance {
         border: .5px solid;
         -webkit-box-shadow: 2px 2px #d8d8d8;
         box-shadow: 2px 2px #d8d8d8;
         margin: 5px 0;
     }
+
 </style>

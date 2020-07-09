@@ -47,7 +47,7 @@
             <div class="col-md-3">
                 <div class="card border-dark">
                     <div class="card-body">
-                        <span class="col-header">To do</span>
+                        <span class="col-header">To do dodoododooodo</span>
                         <hr class="mt-1 bg-info">
                         <draggable tag="ul" v-model="ColOne" v-bind="draggableSettings">
                             <b-card class="card-distance" v-for="(task,index) in ColOne" :key="index">
